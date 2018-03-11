@@ -15,7 +15,7 @@ const Game = {
 	},
 	resolve: async (root, args) => {
 		// TODO: this API isn't there yet
-		const { data } = await axios.get('TODO_URL_FOR_DB_SERVICE/game', { params: { name: args.name } });
+		const { data } = await axios.get(`${process.env.GP_DATABASE_SERVICE_URL}/game`, { params: { name: args.name } });
 
 		return {
 			name: data.name,

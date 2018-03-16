@@ -4,6 +4,9 @@
   "description": "graphql apis for game-pop",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "axios": "0.18.0",
     "dotenv": "5.0.1",

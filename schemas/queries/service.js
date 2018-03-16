@@ -39,13 +39,13 @@ const Service = {
 		gameName,
 		date,
 		endDate,
-		maxResults = 1,
+		maxResults,
 	}) => {
 		const { data } = await axios
 			.get(`${process.env.GP_DATABASE_SERVICE_URL}/services/${serviceName}`, {
 				params: {
 					gameName,
-					maxResults: String(maxResults),
+					maxResults: maxResults ? String(maxResults) : null,
 					sinceDate: date,
 				},
 			});

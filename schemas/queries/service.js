@@ -1,8 +1,7 @@
 const ServiceItem = require('../types/serviceItem');
 const ServiceType = require('../types/serviceType');
 const serviceEndpointUtils = require('./serviceEndpointUtils');
-const axios = require('axios');
-
+const databaseService = require('../../services/databaseService');
 const {
 	GraphQLNonNull,
 	GraphQLString,
@@ -41,18 +40,16 @@ const Service = {
 		endDate,
 		maxResults,
 	}) => {
-		const { data } = await axios
-			.get(`${process.env.GP_DATABASE_SERVICE_URL}/services/${serviceName}`, {
-				params: {
-					gameName,
-					maxResults: maxResults ? String(maxResults) : null,
-					sinceDate: date,
-				},
-			});
+		const results = databaseService.getGameStatsForServiceSinceDate({
+			serviceName,
+			gameName,
+			maxResults,
+			sinceDate: date,
+		});
 
-		const isFound = data.length > 0;
+		const isFound = results.length > 0;
 
-		return data
+		return results
 			.filter(result => !endDate || (Number(result.posted) <= Number(endDate)))
 			.map(result => ({
 				date: result.posted,

@@ -1,24 +1,23 @@
+require('dotenv').config();
+
 const express = require('express');
-const graphqlHTTP = require('express-graphql');
 const schema = require('./schemas');
 const cors = require('cors');
-
-require('dotenv').config();
+const bodyParser = require('body-parser');
+const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 
 const server = express();
 
-const isDev = process.env.NODE_ENV !== 'production';
 const PORT = process.env.PORT || 5000;
 
 server.use(cors());
-server.use(
-	'/graphql',
-	graphqlHTTP(() => ({
-		schema,
-		graphiql: true,
-		pretty: isDev,
-	})),
-);
+
+server.use('/graphql', bodyParser.json(), graphqlExpress({
+	schema,
+	tracing: true,
+	cacheControl: true,
+}));
+server.get('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
 server.listen(PORT, (err) => {
 	if (err) process.exit(1);

@@ -1,26 +1,25 @@
 const dynamodb = require('../../services/dynamodb');
-
+const redisService = require('../../services/redis');
 const ServiceItem = require('../types/serviceItem');
 const ServiceType = require('../types/serviceType');
 const serviceEndpointUtils = require('./serviceEndpointUtils');
 const {
 	GraphQLNonNull,
-	GraphQLString,
 	GraphQLInt,
 	GraphQLList,
 } = require('graphql');
 
+const resultsToServiceItem = (results, serviceName) => results
+	.map(result => ({
+		date: result.posted,
+		service: serviceName,
+		game: { name: result.gamename },
+		hits: serviceEndpointUtils.getHitsForServiceData(serviceName, result),
+	}));
+
 const Popular = {
 	type: new GraphQLList(ServiceItem),
 	args: {
-		startDate: {
-			name: 'startDate',
-			type: new GraphQLNonNull(GraphQLString),
-		},
-		endDate: {
-			name: 'endDate',
-			type: GraphQLString,
-		},
 		serviceName: {
 			name: 'service',
 			type: new GraphQLNonNull(ServiceType),
@@ -32,17 +31,21 @@ const Popular = {
 	},
 	resolve: async (root, {
 		serviceName,
-		startDate,
-		endDate,
 	}) => {
-		const results = await dynamodb.getMostPopularInRange({ startTime: startDate, endTime: endDate });
+		const cachedResults = await redisService.getTopForService(serviceName);
 
-		return results.map(result => ({
-			date: result.posted,
-			service: serviceName,
-			game: { name: result.gamename },
-			hits: serviceEndpointUtils.getHitsForServiceData(serviceName, result),
-		}));
+		if (cachedResults) {
+			return resultsToServiceItem(cachedResults, serviceName);
+		}
+
+		const oneWeekAgo = new Date();
+		oneWeekAgo.setDate(oneWeekAgo.getDate() - 100);
+
+		const results = await dynamodb.getMostPopularInRange({ serviceName, startTime: oneWeekAgo.getTime(), endTime: Date.now() });
+
+		redisService.setTopForService(serviceName, results);
+
+		return resultsToServiceItem(results, serviceName);
 	},
 };
 

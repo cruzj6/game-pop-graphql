@@ -1,9 +1,9 @@
-const Game = require('./game');
+const GameForService = require('./gameForService');
 const Service = require('./service');
 const Popular = require('./popular');
 
 module.exports = {
-	Game,
+	GameForService,
 	Service,
 	Popular,
 };

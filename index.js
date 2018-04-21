@@ -5,6 +5,7 @@ const schema = require('./schemas');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
+const { ApolloEngine } = require('apollo-engine');
 
 const server = express();
 
@@ -14,13 +15,17 @@ server.use(cors());
 
 server.use('/graphql', bodyParser.json(), graphqlExpress({
 	schema,
+	context: {},
 	tracing: true,
 	cacheControl: true,
 }));
 server.get('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
-server.listen(PORT, (err) => {
-	if (err) process.exit(1);
+const engine = new ApolloEngine({
+	apiKey: process.env.APOLLO_ENGINE_API_KEY,
+});
 
-	console.log('game-pop-graphql ready on port: ', PORT); // eslint-disable-line
+engine.listen({
+	port: PORT,
+	expressApp: server,
 });

@@ -15,7 +15,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const MAX_POPULAR_RANGE = 60 * 1000 * 60 * 24 * 30; // 30 days
 
 const getMostPopularInRange = async ({ startTime, endTime, serviceName }) => {
-	//if ((endTime - startTime) > MAX_POPULAR_RANGE) throw new TypeError('startTime and endTime must be within one month');
+	if ((endTime - startTime) > MAX_POPULAR_RANGE) throw new TypeError('startTime and endTime must be within one month');
 
 	try {
 		const { Items } = await docClient.scan({

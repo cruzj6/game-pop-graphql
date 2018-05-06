@@ -1,6 +1,7 @@
 const ServiceItem = require('../types/serviceItem');
 const ServiceType = require('../types/serviceType');
 const serviceEndpointUtils = require('./serviceEndpointUtils');
+const logger = require('../../services/logger');
 const axios = require('axios');
 
 const {
@@ -41,25 +42,30 @@ const Service = {
 		endDate,
 		maxResults,
 	}) => {
-		const { data } = await axios
-			.get(`${process.env.GP_DATABASE_SERVICE_URL}/services/${serviceName}`, {
-				params: {
-					gameName,
-					maxResults: maxResults ? String(maxResults) : null,
-					sinceDate: date,
-				},
-			});
+		try {
+			const { data } = await axios
+				.get(`${process.env.GP_DATABASE_SERVICE_URL}/services/${serviceName}`, {
+					params: {
+						gameName,
+						maxResults: maxResults ? String(maxResults) : null,
+						sinceDate: date,
+					},
+				});
 
-		const isFound = data.length > 0;
+			const isFound = data.length > 0;
 
-		return data
-			.filter(result => !endDate || (Number(result.posted) <= Number(endDate)))
-			.map(result => ({
-				date: result.posted,
-				service: serviceName,
-				game: { name: gameName },
-				hits: isFound ? serviceEndpointUtils.getHitsForServiceData(serviceName, result) : '0',
-			}));
+			return data
+				.filter(result => !endDate || (Number(result.posted) <= Number(endDate)))
+				.map(result => ({
+					date: result.posted,
+					service: serviceName,
+					game: { name: gameName },
+					hits: isFound ? serviceEndpointUtils.getHitsForServiceData(serviceName, result) : '0',
+				}));
+		} catch (err) {
+			logger.error('Could not fetch game service data from database ', err);
+			return err;
+		}
 	},
 };
 

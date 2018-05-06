@@ -5,7 +5,6 @@ const ServiceType = require('../types/serviceType');
 const serviceEndpointUtils = require('./serviceEndpointUtils');
 const {
 	GraphQLNonNull,
-	GraphQLInt,
 	GraphQLList,
 } = require('graphql');
 
@@ -24,22 +23,18 @@ const Popular = {
 			name: 'service',
 			type: new GraphQLNonNull(ServiceType),
 		},
-		maxResults: {
-			name: 'max',
-			type: GraphQLInt,
-		},
 	},
 	resolve: async (root, {
 		serviceName,
 	}) => {
 		const cachedResults = await redisService.getTopForService(serviceName);
 
-		if (cachedResults) {
+		if (cachedResults && cachedResults.length > 0) {
 			return resultsToServiceItem(cachedResults, serviceName);
 		}
 
 		const oneWeekAgo = new Date();
-		oneWeekAgo.setDate(oneWeekAgo.getDate() - 100);
+		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
 		const results = await dynamodb.getMostPopularInRange({ serviceName, startTime: oneWeekAgo.getTime(), endTime: Date.now() });
 

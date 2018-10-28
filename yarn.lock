@@ -272,6 +272,13 @@ apollo-engine@1.1.0:
     apollo-engine-binary-linux "0.2018.4-20-g7a8822c14"
     apollo-engine-binary-windows "0.2018.4-20-g7a8822c14"
 
+apollo-link@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/apollo-link/-/apollo-link-1.2.3.tgz#9bd8d5fe1d88d31dc91dae9ecc22474d451fb70d"
+  dependencies:
+    apollo-utilities "^1.0.0"
+    zen-observable-ts "^0.8.10"
+
 apollo-server-core@^1.3.4:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/apollo-server-core/-/apollo-server-core-1.3.4.tgz#06715290b32375236d90701acb42f415ab78497f"
@@ -296,6 +303,12 @@ apollo-tracing@^0.1.0:
   resolved "https://registry.yarnpkg.com/apollo-tracing/-/apollo-tracing-0.1.4.tgz#5b8ae1b01526b160ee6e552a7f131923a9aedcc7"
   dependencies:
     graphql-extensions "~0.0.9"
+
+apollo-utilities@^1.0.0, apollo-utilities@^1.0.1:
+  version "1.0.24"
+  resolved "https://registry.yarnpkg.com/apollo-utilities/-/apollo-utilities-1.0.24.tgz#77d2d3008bb9ee52aa76b799ce7a8d6cb6cf8a1c"
+  dependencies:
+    fast-json-stable-stringify "^2.0.0"
 
 append-transform@^0.4.0:
   version "0.4.0"
@@ -904,6 +917,10 @@ deep-is@~0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
 
+deepmerge@^2.1.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.2.1.tgz#5d3ff22a01c00f645405a2fbc17d0778a1801170"
+
 default-require-extensions@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/default-require-extensions/-/default-require-extensions-1.0.0.tgz#f37ea15d3e13ffd9b437d33e1a75b5fb97874cb8"
@@ -944,6 +961,10 @@ depd@1.1.1:
 depd@~1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
+
+deprecated-decorator@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/deprecated-decorator/-/deprecated-decorator-0.1.6.tgz#00966317b7a12fe92f3cc831f7583af329b86c37"
 
 destroy@~1.0.4:
   version "1.0.4"
@@ -1526,6 +1547,17 @@ glob@^7.0.3, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
+glob@^7.1.3:
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.3.tgz#3960832d3f1574108342dafd3a67b332c0969df1"
+  dependencies:
+    fs.realpath "^1.0.0"
+    inflight "^1.0.4"
+    inherits "2"
+    minimatch "^3.0.4"
+    once "^1.3.0"
+    path-is-absolute "^1.0.0"
+
 globals@^11.0.1:
   version "11.3.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-11.3.0.tgz#e04fdb7b9796d8adac9c8f64c14837b2313378b0"
@@ -1555,6 +1587,20 @@ graphql-extensions@^0.0.x, graphql-extensions@~0.0.9:
   dependencies:
     core-js "^2.5.3"
     source-map-support "^0.5.1"
+
+graphql-tag@2.10.0:
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.10.0.tgz#87da024be863e357551b2b8700e496ee2d4353ae"
+
+graphql-tools@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/graphql-tools/-/graphql-tools-4.0.2.tgz#9da22974cc6bf6524ed4f4af35556fd15aa6516d"
+  dependencies:
+    apollo-link "^1.2.3"
+    apollo-utilities "^1.0.1"
+    deprecated-decorator "^0.1.6"
+    iterall "^1.1.3"
+    uuid "^3.1.0"
 
 graphql@0.13.1:
   version "0.13.1"
@@ -1811,6 +1857,10 @@ is-extglob@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-extglob/-/is-extglob-1.0.0.tgz#ac468177c4943405a092fc8f29760c6ffc6206c0"
 
+is-extglob@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/is-extglob/-/is-extglob-2.1.1.tgz#a88c02535791f02ed37c76a1b9ea9773c833f8c2"
+
 is-finite@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-finite/-/is-finite-1.0.2.tgz#cc6677695602be550ef11e8b4aa6305342b6d0aa"
@@ -1836,6 +1886,12 @@ is-glob@^2.0.0, is-glob@^2.0.1:
   resolved "https://registry.yarnpkg.com/is-glob/-/is-glob-2.0.1.tgz#d096f926a3ded5600f3fdfd91198cb0888c2d863"
   dependencies:
     is-extglob "^1.0.0"
+
+is-glob@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/is-glob/-/is-glob-4.0.0.tgz#9521c76845cc2610a85203ddf080a958c2ffabc0"
+  dependencies:
+    is-extglob "^2.1.1"
 
 is-number@^2.1.0:
   version "2.1.0"
@@ -1984,7 +2040,7 @@ istanbul-reports@^1.1.4:
   dependencies:
     handlebars "^4.0.3"
 
-iterall@^1.2.0:
+iterall@^1.1.3, iterall@^1.2.0:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/iterall/-/iterall-1.2.2.tgz#92d70deb8028e0c39ff3164fdbf4d8b088130cd7"
 
@@ -2447,6 +2503,14 @@ mem@^1.1.0:
 merge-descriptors@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
+
+merge-graphql-schemas@1.5.7:
+  version "1.5.7"
+  resolved "https://registry.yarnpkg.com/merge-graphql-schemas/-/merge-graphql-schemas-1.5.7.tgz#1eb8535a3f5be0e4e9f69bff4422e7cc49ace4c7"
+  dependencies:
+    deepmerge "^2.1.1"
+    glob "^7.1.3"
+    is-glob "^4.0.0"
 
 merge-stream@^1.0.1:
   version "1.0.1"
@@ -3772,3 +3836,13 @@ yargs@~3.10.0:
     cliui "^2.1.0"
     decamelize "^1.0.0"
     window-size "0.1.0"
+
+zen-observable-ts@^0.8.10:
+  version "0.8.10"
+  resolved "https://registry.yarnpkg.com/zen-observable-ts/-/zen-observable-ts-0.8.10.tgz#18e2ce1c89fe026e9621fd83cc05168228fce829"
+  dependencies:
+    zen-observable "^0.8.0"
+
+zen-observable@^0.8.0:
+  version "0.8.10"
+  resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.10.tgz#85ad75d41fed82e5b4651bd64ca117b2af960182"

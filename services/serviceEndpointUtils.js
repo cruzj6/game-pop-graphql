@@ -1,4 +1,4 @@
-const Constants = require('../../constants');
+const Constants = require('../constants');
 
 module.exports = {
 	getHitsForServiceData(service, data) {

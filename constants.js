@@ -1,9 +1,11 @@
+const _ = require('lodash');
+
 const SERVICE_ENDPOINTS = {
 	TWITCH: 'twitch',
 };
 
 const SERVICE_TABLES = {
-	[SERVICE_ENDPOINTS.TWITCH]: 'twitch',
+	[_.toUpper(SERVICE_ENDPOINTS.TWITCH)]: 'twitch',
 };
 
 module.exports = {

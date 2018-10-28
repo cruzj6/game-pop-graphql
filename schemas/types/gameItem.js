@@ -1,14 +1,7 @@
-const {
-	GraphQLNonNull,
-	GraphQLString,
-	GraphQLObjectType,
-} = require('graphql');
+const gql = require('graphql-tag');
 
-module.exports = new GraphQLObjectType({
-	name: 'GameItem',
-	fields: () => ({
-		name: {
-			type: new GraphQLNonNull(GraphQLString),
-		},
-	}),
-});
+module.exports = gql`
+	type GameItem {
+		name: String!
+	}
+`;

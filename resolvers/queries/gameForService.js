@@ -9,7 +9,6 @@ const GameForService = async (root, {
 }) => {
 	const results = await dynamodb.getServiceItemsForGame({
 		gameName,
-		startTime:
 		startDate,
 		endTime: endDate,
 		serviceName,

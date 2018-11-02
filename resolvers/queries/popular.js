@@ -1,5 +1,5 @@
 const serviceEndpointUtils = require('../../services/serviceEndpointUtils');
-const dynamodb = require('../../services/dynamodb');
+const athena = require('../../services/athena');
 const redisService = require('../../services/redis');
 const constants = require('../../constants');
 
@@ -24,7 +24,7 @@ const Popular = async (root, {
 	const oneWeekAgo = new Date();
 	oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-	const results = await dynamodb.getMostPopularInRange({ serviceName, startTime: oneWeekAgo.getTime(), endTime: Date.now() });
+	const results = await athena.getPopular();
 
 	redisService.setTopForService(service, results);
 

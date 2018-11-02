@@ -72,8 +72,6 @@ const getPopular = async () => {
 			};
 		});
 
-		console.log({ normalizedResults });
-
 		return normalizedResults;
 	} catch (e) {
 		logger.error(e);

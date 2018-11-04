@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const _ = require('lodash/fp');
 const logger = require('../services/logger');
+const constants = require('../constants');
 
 AWS.config.update({
 	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -8,59 +9,63 @@ AWS.config.update({
 	region: process.env.AWS_REGION,
 });
 
+const POPULAR_TIME_SPAN_DAYS = 7;
+const MAX_POPULAR = 50;
+
 const athena = new AWS.Athena({
 	endpoint: process.env.AWS_ATHENA_URL,
 });
 
-const getPopular = async () => {
-	try {
-		const { QueryExecutionId } = await athena.startQueryExecution({
-			QueryString: `
-				SELECT gamename, greatest(viewers) as viewers, posted FROM twitcheverything
-				WHERE posted BETWEEN 1540514479275 AND 1541119279275
-				ORDER BY viewers DESC
-			`,
-			ResultConfiguration: {
-				OutputLocation: 's3://athena-twitch-results',
-			},
-			QueryExecutionContext: {
-				Database: 'twitchgames',
-			},
-		}).promise();
+const getQueryStringForTopGames = (startTime, endTime) => `
+	SELECT gamename, greatest(viewers) as viewers, posted FROM twitcheverything
+	WHERE posted BETWEEN ${startTime} AND ${endTime}
+	ORDER BY viewers DESC
+`;
 
-		const getExecutionStatus = async () => {
-			const result = await athena.getQueryExecution({
-				QueryExecutionId,
-			}).promise();
+const getExecutionStatus = async (QueryExecutionId) => {
+	const result = await athena.getQueryExecution({
+		QueryExecutionId,
+	}).promise();
 
-			return result.QueryExecution;
-		};
+	return result.QueryExecution;
+};
 
-		const waitForExecution = () => new Promise(async (resolve, reject) => {
-			const result = await getExecutionStatus();
-			const { Status: { State, StateChangeReason } } = result;
+const waitForAthenaQueryExecution = QueryExecutionId => new Promise(async (resolve, reject) => {
+	const result = await getExecutionStatus(QueryExecutionId);
+	const { Status: { State, StateChangeReason } } = result;
 
-			if (State !== 'SUCCEEDED') {
-				await new Promise(res => setTimeout(res, 1000));
-				await waitForExecution();
-				resolve();
-			} else if (State === 'FAILED') {
-				reject(StateChangeReason);
-			} else {
-				resolve();
-			}
-		});
+	switch (State) {
+	case constants.ATHENA_QUERY_STATES.SUCCEEDED:
+		resolve();
+		break;
+	case constants.ATHENA_QUERY_STATES.CANCELLED:
+	case constants.ATHENA_QUERY_STATES.FAILED:
+		reject(StateChangeReason);
+		break;
+	default: {
+		await new Promise(res => setTimeout(res, 1000));
+		await waitForAthenaQueryExecution(QueryExecutionId);
+		resolve();
+	}
+	}
+});
 
-		await waitForExecution();
+const columnIndexGetterFromQueryResults = results => name => (
+	_.findIndex(({ Name }) => Name === name, results.ResultSet.ResultSetMetadata.ColumnInfo)
+);
 
-		const results = await athena.getQueryResults({ QueryExecutionId }).promise();
-		const getColumnIndex = name => _.findIndex(({ Name }) => Name === name, results.ResultSet.ResultSetMetadata.ColumnInfo);
+const curriedSplice = (...args) => (arr = []) => arr.splice(...args);
 
-		const viewersIndex = getColumnIndex('viewers');
-		const postedIndex = getColumnIndex('posted');
-		const gameNameIndex = getColumnIndex('gamename');
+const normalizePopularQueryResults = (results) => {
+	const getColumnIndex = columnIndexGetterFromQueryResults(results);
+	const viewersIndex = getColumnIndex('viewers');
+	const postedIndex = getColumnIndex('posted');
+	const gameNameIndex = getColumnIndex('gamename');
 
-		const normalizedResults = results.ResultSet.Rows.splice(1).map(({ Data }) => {
+	return _.flowRight(
+		curriedSplice(0, MAX_POPULAR),
+		_.uniqBy('gamename'),
+		_.map(({ Data }) => {
 			const viewers = Data[viewersIndex].VarCharValue;
 			const posted = Data[postedIndex].VarCharValue;
 			const gamename = Data[gameNameIndex].VarCharValue;
@@ -70,7 +75,33 @@ const getPopular = async () => {
 				posted: _.toString(posted),
 				gamename,
 			};
-		});
+		}),
+		curriedSplice(1),
+	)(results.ResultSet.Rows);
+};
+
+const getPopular = async () => {
+	try {
+		const date = new Date();
+		date.setDate(date.getDate() - POPULAR_TIME_SPAN_DAYS);
+
+		const endingDate = Date.now();
+		const statingDate = date.getTime();
+
+		const { QueryExecutionId } = await athena.startQueryExecution({
+			QueryString: getQueryStringForTopGames(statingDate, endingDate),
+			ResultConfiguration: {
+				OutputLocation: constants.AWS_ATHENA.S3_RESULTS_URL,
+			},
+			QueryExecutionContext: {
+				Database: constants.AWS_ATHENA.DATABASE_NAME,
+			},
+		}).promise();
+
+		await waitForAthenaQueryExecution(QueryExecutionId);
+
+		const results = await athena.getQueryResults({ QueryExecutionId }).promise();
+		const normalizedResults = normalizePopularQueryResults(results);
 
 		return normalizedResults;
 	} catch (e) {

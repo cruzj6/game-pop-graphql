@@ -1,7 +1,7 @@
-const axios = require('axios');
-const serviceEndpointUtils = require('../../services/serviceEndpointUtils');
 const logger = require('../../services/logger');
+const gamePopDatabaseService = require('../../services/gamePopDatabase');
 const constants = require('../../constants');
+const serviceDataItemTransformer = require('../../transformers/serviceDataItem');
 
 const Service = async (root, {
 	serviceName,
@@ -13,25 +13,23 @@ const Service = async (root, {
 	try {
 		const service = constants.SERVICE_ENDPOINTS[serviceName];
 
-		const { data } = await axios
-			.get(`${process.env.GP_DATABASE_SERVICE_URL}/services/${service}`, {
-				params: {
-					gameName,
-					maxResults: maxResults ? String(maxResults) : null,
-					sinceDate: date,
-				},
-			});
+		const gameData = await gamePopDatabaseService.getGameDataForService({
+			gameName,
+			maxResults,
+			serviceName: service,
+			sinceDate: date,
+		});
 
-		const isFound = data.length > 0;
-
-		return data
-			.filter(result => !endDate || (Number(result.posted) <= Number(endDate)))
-			.map(result => ({
-				date: result.posted,
+		return gameData.length > 0
+			? gameData
+				.filter(result => !endDate || (Number(result.posted) <= Number(endDate)))
+				.map(result => serviceDataItemTransformer.fromGamePopDatabaseGameItem(result, service))
+			: {
+				date: null,
 				service,
 				game: { name: gameName },
-				hits: isFound ? serviceEndpointUtils.getHitsForServiceData(service, result) : '0',
-			}));
+				hits: '0',
+			};
 	} catch (err) {
 		logger.error('Could not fetch game service data from database ', err);
 		return err;

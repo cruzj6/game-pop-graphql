@@ -21,9 +21,17 @@ const ATHENA_QUERY_STATES = {
 	QUEUED: 'QUEUED',
 };
 
+const TWITCH_API_URL_V5 = 'https://api.twitch.tv/kraken/';
+const TWITCH_DATA_TYPES = {
+	STREAMS: 'streams',
+	GAMES: 'games',
+};
+
 module.exports = {
 	SERVICE_ENDPOINTS,
 	SERVICE_TABLES,
 	AWS_ATHENA,
 	ATHENA_QUERY_STATES,
+	TWITCH_API_URL_V5,
+	TWITCH_DATA_TYPES,
 };
